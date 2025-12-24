@@ -55,6 +55,9 @@ func (s *TodoService) Update(ctx context.Context, id int, input domain.UpdateTod
 		input.Description = &trimmed
 	}
 
+	if input.Completed != nil {
+	}
+
 	return s.repo.Update(ctx, id, input)
 }
 
@@ -114,4 +117,10 @@ func validateID(id int) error {
 		return domain.ErrInvalidID
 	}
 	return nil
+}
+
+func (s *TodoService) GetFiltered(ctx context.Context, completed *bool, search string) ([]domain.Todo, error) {
+	search = strings.TrimSpace(search)
+
+	return s.repo.GetFiltered(ctx, completed, search)
 }

@@ -2,6 +2,7 @@ package memory
 
 import (
 	"context"
+	"strings"
 	"sync"
 	"time"
 
@@ -102,4 +103,23 @@ func (r *TodoRepository) Delete(ctx context.Context, id int) error {
 
 	delete(r.todos, id)
 	return nil
+}
+
+func (r *TodoRepository) GetFiltered(ctx context.Context, completed *bool, search string) ([]domain.Todo, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var filtered []domain.Todo
+	for _, todo := range r.todos {
+		if completed != nil && todo.Completed != *completed {
+			continue
+		}
+		if search != "" && !strings.Contains(strings.ToLower(todo.Title), strings.ToLower(search)) &&
+			!strings.Contains(strings.ToLower(todo.Description), strings.ToLower(search)) {
+			continue
+		}
+		filtered = append(filtered, *todo)
+	}
+
+	return filtered, nil
 }

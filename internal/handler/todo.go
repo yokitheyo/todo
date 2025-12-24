@@ -20,6 +20,7 @@ type TodoService interface {
 	GetAll(ctx context.Context) ([]domain.Todo, error)
 	Update(ctx context.Context, id int, input domain.UpdateTodoInput) (*domain.Todo, error)
 	Delete(ctx context.Context, id int) error
+	GetFiltered(ctx context.Context, completed *bool, search string) ([]domain.Todo, error)
 }
 
 type TodoHandler struct {
@@ -54,6 +55,10 @@ func (h *TodoHandler) todosHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		h.createTodo(ctx, w, r)
 	case http.MethodGet:
+		if r.URL.Query().Get("completed") != "" || r.URL.Query().Get("search") != "" {
+			h.getFilteredTodos(ctx, w, r)
+			return
+		}
 		h.getAllTodos(ctx, w, r)
 	default:
 		h.respondError(w, http.StatusMethodNotAllowed, "method not allowed")
@@ -163,6 +168,26 @@ func (h *TodoHandler) handleRequestError(w http.ResponseWriter, err error) {
 	default:
 		h.respondError(w, http.StatusBadRequest, "invalid request body")
 	}
+}
+
+func (h *TodoHandler) getFilteredTodos(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	completedStr := query.Get("completed")
+	search := query.Get("search")
+
+	var completed *bool
+	if completedStr != "" {
+		b := completedStr == "true"
+		completed = &b
+	}
+
+	todos, err := h.service.GetFiltered(ctx, completed, search)
+	if err != nil {
+		h.handleServiceError(w, err)
+		return
+	}
+
+	h.respondJSON(w, http.StatusOK, todos)
 }
 
 func (h *TodoHandler) decodeJSON(w http.ResponseWriter, r *http.Request, v interface{}) error {

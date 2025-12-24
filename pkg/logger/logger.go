@@ -30,6 +30,7 @@ func New(level string, output io.Writer, format string) *Logger {
 		output = os.Stdout
 	}
 
+	// change flag logera
 	return &Logger{
 		level:  parseLevel(level),
 		logger: log.New(output, "", log.Lshortfile),

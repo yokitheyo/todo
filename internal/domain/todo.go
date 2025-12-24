@@ -47,4 +47,5 @@ type TodoRepository interface {
 	GetAll(ctx context.Context) ([]Todo, error)
 	Update(ctx context.Context, id int, input UpdateTodoInput) (*Todo, error)
 	Delete(ctx context.Context, id int) error
+	GetFiltered(ctx context.Context, completed *bool, search string) ([]Todo, error)
 }

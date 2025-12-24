@@ -34,7 +34,7 @@ get_todo_999:
 update_todo:
 	curl -s -X PUT $(HOST)/todos/1 \
 	-H "Content-Type: application/json" \
-	-d '{"description": "Milk, eggs, bread, butter"}' | jq
+	-d '{"description": "Milk, eggs, bread, butter", "completed": true}' | jq
 
 update_todo_empty:
 	curl -s -X PUT $(HOST)/todos/1 \
