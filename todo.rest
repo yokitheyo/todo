@@ -1,0 +1,64 @@
+### Health check
+GET http://localhost:8080/health
+Accept: application/json
+
+# Base URL
+@host = http://localhost:8080
+
+### Create todo - success
+POST {{host}}/todos
+Content-Type: application/json
+
+{
+  "title": "Buy groceries",
+  "description": "Milk, eggs, bread",
+  "completed": false
+}
+
+### Create todo - validation error (empty title)
+POST {{host}}/todos
+Content-Type: application/json
+
+{
+  "title": "",
+  "description": "No title",
+  "completed": false
+}
+
+### Create todo - validation error (unknown field)
+POST {{host}}/todos
+Content-Type: application/json
+
+{
+  "title": "Test",
+  "unknown": "field",
+  "completed": false
+}
+
+### Get all todos
+GET {{host}}/todos
+
+### Get todo by id - success
+GET {{host}}/todos/1
+
+### Get todo by id - not found
+GET {{host}}/todos/999
+
+### Update todo - success 
+PUT {{host}}/todos/1
+Content-Type: application/json
+
+{
+  "description": "Milk, eggs, bread, butter"
+}
+
+### Update todo - validation error (empty title)
+PUT {{host}}/todos/1
+Content-Type: application/json
+
+{
+  "title": ""
+}
+
+### Delete todo - success
+DELETE {{host}}/todos/1
